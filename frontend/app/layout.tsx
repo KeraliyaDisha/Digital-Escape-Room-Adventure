@@ -8,6 +8,9 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import Cookies from "js-cookie";
+import ParticlesBackground from '../components/Background';
+import Navbar from "@/components/Header";
+import Footer from "@/components/Footer";
 
 
 export default function RootLayout({
@@ -33,8 +36,11 @@ export default function RootLayout({
   });
   return (
     <html lang="en">
-      <body>
+      <body className="bg-[#243642] overflow-y-scroll overflow-x-hidden">
+        <Navbar />
+      <ParticlesBackground />
         <ApolloProvider client={client}>{children}</ApolloProvider>
+        <Footer/>
       </body>
     </html>
   );

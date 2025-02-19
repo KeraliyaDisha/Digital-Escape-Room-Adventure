@@ -8,7 +8,7 @@ const server = async () => {
   try {
     const app = express();    
     app.use(cors({
-      origin: "http://localhost:3000",
+      origin: "*",
       credentials: true,
     }));
     
@@ -24,7 +24,7 @@ const server = async () => {
     });
 
     await apolloServer.start();
-
+    
     app.use(express.json()); 
 
     apolloServer.applyMiddleware({ app });
