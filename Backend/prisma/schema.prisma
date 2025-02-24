@@ -14,9 +14,27 @@ datasource db {
 }
 
 model User {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  firstName String
-  lastName  String
-  email     String  @unique
-  password  String
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  firstName   String
+  lastName    String
+  email       String  @unique
+  password    String
+}
+
+model Puzzle {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  type        String
+  question    String
+  answer      String
+  hint        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Game {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  puzzleIds   String[]
+  players     String[]
+  startedAt   DateTime @default(now())
+  completedAt DateTime?
 }

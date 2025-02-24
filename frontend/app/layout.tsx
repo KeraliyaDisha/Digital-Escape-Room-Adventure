@@ -10,7 +10,6 @@ import { setContext } from "@apollo/client/link/context";
 import Cookies from "js-cookie";
 import ParticlesBackground from '../components/Background';
 import Navbar from "@/components/Header";
-import Footer from "@/components/Footer";
 
 
 export default function RootLayout({
@@ -40,7 +39,6 @@ export default function RootLayout({
         <Navbar />
       <ParticlesBackground />
         <ApolloProvider client={client}>{children}</ApolloProvider>
-        <Footer/>
       </body>
     </html>
   );

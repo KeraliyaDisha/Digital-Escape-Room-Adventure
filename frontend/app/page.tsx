@@ -51,7 +51,7 @@ export default function Home() {
         <div className="container mx-auto px-6 py-48 text-center relative">
           <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
           <div className="relative">
-            <h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 to-purple-300">
+            <h1 className="text-5xl md:text-7xl font-extrabold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-[#387478] to-[#9bd3d7]">
               Ready to Escape?
             </h1>
             <p className="text-xl md:text-2xl max-w-2xl mx-auto mb-12 text-gray-300">
@@ -59,12 +59,12 @@ export default function Home() {
               offers a new challenge.
             </p>
             <div className="flex gap-4 justify-center">
-              <button className="bg-indigo-600 text-white font-bold py-4 px-8 rounded-full hover:bg-indigo-700 transition-all transform hover:scale-105">
+              <button className="bg-[#387478] text-white font-bold py-4 px-8 rounded-full hover:bg-[#559196] transition-all transform hover:scale-105">
                 Play Now
               </button>
               <Link
                 href="/auth/signin"
-                className="bg-transparent border-2 border-indigo-400 text-white font-bold py-4 px-8 rounded-full hover:bg-indigo-900 transition-all"
+                className="bg-transparent border-2 border-[#387478] text-white font-bold py-4 px-8 rounded-full hover:bg-[#387478] transition-all"
               >
                 Login
               </Link>
