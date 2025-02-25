@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import "./globals.css";
 import {
   ApolloClient,
@@ -8,9 +8,8 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import Cookies from "js-cookie";
-import ParticlesBackground from '../components/Background';
+import ParticlesBackground from "../components/Background";
 import Navbar from "@/components/Header";
-
 
 export default function RootLayout({
   children,
@@ -18,7 +17,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const httpLink = createHttpLink({
-    uri: "http://localhost:4000/graphql", 
+    uri: "http://localhost:4000/graphql",
   });
   const authLink = setContext((_, { headers }) => {
     const token = Cookies.get("token");
@@ -36,9 +35,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-[#243642] overflow-y-scroll overflow-x-hidden">
+        <ParticlesBackground />
+        <ApolloProvider client={client}>
         <Navbar />
-      <ParticlesBackground />
-        <ApolloProvider client={client}>{children}</ApolloProvider>
+          {children}
+        </ApolloProvider>
       </body>
     </html>
   );

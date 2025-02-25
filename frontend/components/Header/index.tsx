@@ -1,25 +1,62 @@
-/* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/exhaustive-deps */
 import Link from "next/link";
+import Image from "next/image";
+import { useQuery } from "@apollo/client";
 import { useState, useEffect } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import { CircleUserRound, LogOut} from "lucide-react";
+import { CircleUserRound, LogOut } from "lucide-react";
+import { get_User } from "@/graphql/queries";
+
 const Navbar = () => {
+  const { data, loading, error, refetch } = useQuery(get_User, {
+    errorPolicy: "all",
+  });
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isOpen, setIsOpen] = useState(false); // Mobile menu toggle
+  const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [showProfileMenu, setShowProfileMenu] = useState(false); // Desktop profile dropdown
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
 
   const router = useRouter();
-  const pathname = usePathname();
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  // Re-run the token check whenever the route (pathname) changes.
-  useEffect(() => {
+  // Function to check for token and update auth state.
+  const checkAuth = () => {
     const token = Cookies.get("token");
-    setIsAuthenticated(!!token);
-  }, [pathname]);
+    if (token) {
+      if (!isAuthenticated) {
+        setIsAuthenticated(true);
+        refetch(); // Update user data immediately
+      }
+    } else {
+      if (isAuthenticated) setIsAuthenticated(false);
+    }
+  };
+
+  useEffect(() => {
+    // Run on mount
+    checkAuth();
+
+    // Listen for the custom "loggedIn" event (make sure you dispatch it after login)
+    window.addEventListener("loggedIn", checkAuth);
+
+    // Fallback polling in case the event isn’t dispatched or caught.
+    const interval = setInterval(() => {
+      checkAuth();
+    }, 1000);
+
+    return () => {
+      window.removeEventListener("loggedIn", checkAuth);
+      clearInterval(interval);
+    };
+  }, [refetch, isAuthenticated]);
+
+  useEffect(() => {
+    if (error && error.message === "Not authenticated") {
+      setIsAuthenticated(false);
+    }
+  }, [error]);
 
   const handleLogout = () => {
     Cookies.remove("token");
@@ -28,7 +65,6 @@ const Navbar = () => {
     router.push("/");
   };
 
-  // Handle scroll state for styling
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
@@ -38,6 +74,12 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  if (loading) return <>Loading...</>;
+
+  if (error && error.message !== "Not authenticated") {
+    return <p className="text-red-500">{error.message}</p>;
+  }
+
   return (
     <nav
       className={`fixed left-1/2 transform -translate-x-1/2 z-50 border border-gray-700 transition-all duration-300 ${
@@ -46,9 +88,15 @@ const Navbar = () => {
           : "top-6 w-[95%] md:w-[90%] py-3 rounded-xl"
       }`}
     >
-      <div className="container mx-auto px-2 flex justify-between items-center">
+      <div className="container mx-auto px-4 flex justify-between items-center">
         <Link href="/">
-          <img src="/logo.png" className="w-28 h-auto" alt="Logo" />
+          <Image
+            src="/logo.png"
+            className="w-28 h-auto"
+            alt="Logo"
+            width={800}
+            height={500}
+          />
         </Link>
 
         <ul className="hidden md:flex space-x-6">
@@ -93,7 +141,7 @@ const Navbar = () => {
                 Login
               </Link>
             ) : (
-              <div className="relative inline-block">
+              <div className="relative">
                 <button
                   onClick={() => setShowProfileMenu(!showProfileMenu)}
                   className="flex items-center focus:outline-none"
@@ -105,15 +153,15 @@ const Navbar = () => {
                 </button>
                 {showProfileMenu && (
                   <div className="absolute right-0 mt-2 w-48 bg-[#387478] text-white rounded shadow-lg">
-                    {/* Dropdown header: Profile icon on left and username on right */}
                     <div className="flex items-center px-4 py-2 border-b border-gray-200">
                       <CircleUserRound size={24} className="mr-2" />
-                      <span className="font-medium">John Doe</span>
+                      <span className="font-medium">
+                        {data?.user?.firstName || "guest"}
+                      </span>
                     </div>
-                    {/* Logout option with icon on left */}
                     <button
                       onClick={handleLogout}
-                      className="flex items-center w-full text-left px-4 py-2 hover:bg-[#559196] "
+                      className="flex items-center w-full text-left px-4 py-2 hover:bg-[#559196]"
                     >
                       <LogOut size={18} className="mr-2" />
                       <span>Logout</span>
@@ -126,10 +174,7 @@ const Navbar = () => {
         </ul>
 
         <div className="md:hidden">
-          <button
-            onClick={toggleMenu}
-            className="text-white focus:outline-none"
-          >
+          <button onClick={toggleMenu} className="text-white focus:outline-none">
             <svg
               className="w-7 h-7"
               fill="none"

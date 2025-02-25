@@ -1,7 +1,7 @@
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { createSchema } from "./graphQl/schema";
-import { prisma } from "./config/db";
+import  jwt  from "jsonwebtoken";
 import cors from "cors"
 
 const server = async () => {
@@ -17,10 +17,20 @@ const server = async () => {
     const apolloServer = new ApolloServer({
       schema,
       introspection: true,
-      context: ({ req }) => ({
-        req,
-        prisma,
-      }),
+      context: ({ req }) => {
+        const token = req.headers.authorization || "";
+
+        try {
+            if (token) {
+                const decodedToken = jwt.verify(token, process.env.JWT_SECRET!);
+                return { userId: (decodedToken as { userId: string }).userId, req};
+            }
+        } catch (err: any) {
+            console.error("JWT verification failed:", err.message);
+        }
+
+        return { userId: null, req};
+      },
     });
 
     await apolloServer.start();

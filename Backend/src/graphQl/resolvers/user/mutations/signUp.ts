@@ -6,11 +6,6 @@ import { Token } from "../../../../models//User";
 
 @Resolver()
 export default class SignupResolver {
-    @Query(() => String) 
-    async hello() {
-      return "Hello, GraphQL!";
-    }
-
     @Mutation(() => Token)
     async signup(
         @Arg("firstName") firstName: string,
